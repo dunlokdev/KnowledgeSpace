@@ -1,5 +1,6 @@
-﻿using KnowledgeSpace.ViewModels;
-using KnowledgeSpace.ViewModels.Systems;
+﻿using KnowledgeSpace.Data.Common;
+using KnowledgeSpace.Data.DTO;
+using KnowledgeSpace.Data.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,12 +23,12 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         // [POST]: http://5001/api/roles
         [HttpPost]
-        public async Task<IActionResult> CreateRole(RoleViewModel roleViewModel)
+        public async Task<IActionResult> CreateRole(RoleRequest roleRequest)
         {
             var role = new IdentityRole()
             {
-                Name = roleViewModel.Name,
-                NormalizedName = roleViewModel.Name.ToUpper()
+                Name = roleRequest.Name,
+                NormalizedName = roleRequest.Name.ToUpper()
             };
 
             var result = await _roleManager.CreateAsync(role);
@@ -44,7 +45,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRoles()
         {
-            var roles = await _roleManager.Roles.Select(r => new RoleViewModel()
+            var roles = await _roleManager.Roles.Select(r => new RoleDTO()
             {
                 Id = r.Id,
                 Name = r.Name
@@ -55,7 +56,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
 
         // [GET] http://5001/api/roles?keyword={keyword}&pageIndex=1&pageSize=10
-        [HttpGet]
+        [HttpGet("filter")]
         public async Task<IActionResult> GetRolesPaging(string keyword, int pageIndex, int pageSize)
         {
             var query = _roleManager.Roles;
@@ -67,14 +68,14 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var totalRecords = await query.CountAsync();
             var items = await query.Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
-                .Select(r => new RoleViewModel()
+                .Select(r => new RoleDTO()
                 {
                     Id = r.Id,
                     Name = r.Name
                 })
                 .ToListAsync();
 
-            var pagination = new Pagination<RoleViewModel>
+            var pagination = new Pagination<RoleDTO>
             {
                 Data = items,
                 TotalRecords = totalRecords,
@@ -95,24 +96,19 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 return NotFound();
             }
 
-            var roleViewModel = new RoleViewModel()
+            var roleDto = new RoleDTO()
             {
                 Id = role.Id,
                 Name = role.Name
             };
 
-            return Ok(roleViewModel);
+            return Ok(roleDto);
         }
 
         // [PUT]: http://5001/api/roles/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRole(string id, [FromBody] RoleViewModel roleViewModel)
+        public async Task<IActionResult> UpdateRole(string id, [FromBody] RoleRequest roleRequest)
         {
-            if (id != roleViewModel.Id)
-            {
-                return BadRequest();
-            }
-
             var role = await _roleManager.FindByIdAsync(id);
 
             if (role == null)
@@ -120,8 +116,8 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 return NotFound();
             }
 
-            role.Name = roleViewModel.Name;
-            role.NormalizedName = roleViewModel.Name.ToUpper();
+            role.Name = roleRequest.Name;
+            role.NormalizedName = roleRequest.Name.ToUpper();
 
             var result = await _roleManager.UpdateAsync(role);
 
@@ -148,13 +144,13 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
             if (result.Succeeded)
             {
-                var roleViewModel = new RoleViewModel()
+                var roleDto = new RoleDTO()
                 {
                     Id = role.Id,
                     Name = role.Name
                 };
 
-                return Ok(roleViewModel);
+                return Ok(roleDto);
             }
 
             return BadRequest(result.Errors);

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace KnowledgeSpace.ViewModels.Systems
+namespace KnowledgeSpace.Data.DTO
 {
-    public class RoleViewModel
+    public class RoleDTO
     {
         public string Id { get; set; }
         public string Name { get; set; }
