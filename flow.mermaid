@@ -1,0 +1,16 @@
+graph TD;
+    A[User đăng ký] -->|Tạo tài khoản| B[Users]
+    B -->|Phân vai trò| C[UserRoles]
+    C -->|Quản lý quyền hạn| D[Roles & Permissions]
+    D -->|Xác định chức năng| E[Functions]
+
+    F[User tạo mục kiến thức] -->|Thêm mục kiến thức| G[KnowledgeBases]
+    G -->|Thêm nội dung| H[KnowledgeBaseContent]
+    G -->|Gán nhãn| I[Labels]
+
+    J[User báo cáo vấn đề] -->|Thêm báo cáo| K[Reports]
+    K -->|Ghi chi tiết vấn đề| L[Problem]
+
+    M[User đính kèm tệp] -->|Thêm tệp đính kèm| N[Attachments]
+
+    O[User thực hiện hành động] -->|Ghi lại hành động| P[ActivityLogs]
