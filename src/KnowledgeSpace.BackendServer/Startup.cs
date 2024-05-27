@@ -56,6 +56,11 @@ namespace KnowledgeSpace.BackendServer
             services.AddControllers();
 
             services.AddTransient<DbInitializer>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "KnowledgeSpace API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +80,13 @@ namespace KnowledgeSpace.BackendServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "KnowledgeSpace API V1");
             });
         }
     }
